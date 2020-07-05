@@ -16,14 +16,29 @@ def get_filters():
     """
     print('Hello! Let\'s explore some US bikeshare data!')
     # get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
-    city = input("Which city would you like to explore ?" )
-
+    while True:
+        city = input("Which city would you like to explore ?")
+        city = city.lower()
+        if city in ['chicago', 'new york city', 'washington']:
+            break
+        else:
+            print("invalid input. Please enter a valid input")
     # get user input for month (all, january, february, ... , june)
-    month = input("Do you want details specific to a particular month? If yes, type month name else type 'all'")
-
+    while True:    
+        month = input("Do you want details specific to a particular month? If yes, type month name from within first six months else type 'all'")
+        month = month.lower()
+        if month in ['january', 'february', 'march', 'april', 'may', 'june', 'all']:
+            break
+        else:
+            print("invalid input. Please enter a valid input")
     # get user input for day of week (all, monday, tuesday, ... sunday)
-    day = input("Do you want details specific to a particular day? If yes, type day name else type 'all'")
-
+    while True:
+        day = input("Do you want details specific to a particular day? If yes, type day name else type 'all'")
+        day = day.lower()
+        if day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'all']:
+            break
+        else:
+            print("invalid input. Please enter a valid input")
     print('-'*40)
     return city, month, day
 
@@ -123,7 +138,7 @@ def trip_duration_stats(df):
     print('-'*40)
 
 
-def user_stats(df):
+def user_stats(df, city):
     """Displays statistics on bikeshare users."""
 
     print('\nCalculating User Stats...\n')
@@ -132,15 +147,28 @@ def user_stats(df):
     # Display counts of user types
     user_types = df.groupby(['User Type'])['User Type'].count()
     print(user_types, "\n")
-    # Display counts of gender
-    gen = df.groupby(['Gender'])['Gender'].count()
-    print(gen)
-    # Display earliest, most recent, and most common year of birth
-
+    if city != 'washington':
+        # Display counts of gender
+        gen = df.groupby(['Gender'])['Gender'].count()
+        print(gen)
+        # Display earliest, most recent, and most common year of birth
+        mryob = sorted(df.groupby(['Birth Year'])['Birth Year'], reverse=True)[0][0]
+        eyob = sorted(df.groupby(['Birth Year'])['Birth Year'])[0][0]
+        mcyob = df['Birth Year'].mode()[0]
+        print("The earliest year of birth is ", eyob, "\n")
+        print("The most recent year of birth is ", mryob, "\n")
+        print("The most common year of birth is ", mcyob, "\n")
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
-
+    x = 1
+    while True:
+        raw = input('\nWould you like to see some raw data? Enter yes or no.\n')
+        if raw.lower() == 'yes':
+            print(df[x:x+5])
+            x = x+5
+        else:
+            break
 
 def main():
     while True:
@@ -150,7 +178,7 @@ def main():
         time_stats(df)
         station_stats(df)
         trip_duration_stats(df)
-        user_stats(df)
+        user_stats(df, city)
 
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes':
